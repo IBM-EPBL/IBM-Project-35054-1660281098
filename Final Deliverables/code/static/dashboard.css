@@ -2,7 +2,7 @@
 
 .body
 {
-  background-image: url('https://ibm-news-tracker.s3.jp-tok.cloud-object-storage.appdomain.cloud/login-signup-backgroud-image.png');
+  background-image: url('http://www.porcelaine-ombre-et-lumiere.com/images/Image/Papier_Journal_papillon_A4_1378112766.jpg');
   background-repeat: no-repeat;
   background-size: cover;
 }
@@ -10,6 +10,8 @@
 h4
 {
   font-family: Pacifico, cursive;
+  color: white;
+  font-size: xx-large;
 }
 
 .on-screen 
@@ -23,10 +25,10 @@ h4
 {
   position: absolute;
   border-radius: 25px;
-  right:  40px;
-  border: 5px solid white;
-  z-index: 1;
-  background: #48c9b0;
+  top: 75px;
+  right:  750px;
+  border: 5px solid black;
+  background: #423d3d86;
   max-width: 360px;
   margin: 0 auto 80px;
   padding: 20px;
