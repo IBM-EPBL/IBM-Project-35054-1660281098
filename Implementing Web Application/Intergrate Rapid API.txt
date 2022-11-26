@@ -1,0 +1,111 @@
+@app.route("/login", methods = ["GET", "POST"])
+
+def login():
+
+        global userid
+
+        msg = " "
+
+        if request.method == "POST":
+
+                username = request.form["username"]
+                password = request.form["password"]
+                
+                usr_lst = []
+                pass_lst = []
+
+                data = ibm_db.exec_immediate(conn, "SELECT \"USERNAME\", \"PASSWORD\" FROM \"DQW60999\".\"USERDETAILS\";")
+
+                while ibm_db.fetch_row(data) != False:
+
+                        usr_lst.append(ibm_db.result(data, 0).replace(" ", ""))
+                        pass_lst.append(ibm_db.result(data, 1).replace(" ", ""))
+ 
+                if (username in usr_lst and password in pass_lst):
+ 
+                        session["loggedin"] = True
+
+                        msg = "Logged in successfully !"
+ 
+                        return render_template("dashboard.html")
+ 
+                else:
+ 
+                        msg = "Incorrect username / password !"
+ 
+                        return render_template("login.html", msg = msg)
+
+@app.route("/register", methods = ["GET", "POST"])
+
+def register():
+
+        if request.method == "POST":
+
+                fullname = request.form["fullname"]
+                email = request.form["email"]
+                username = request.form["username"]
+                password = request.form["password"]
+
+                insert = ibm_db.exec_immediate(conn, "INSERT INTO \"DQW60999\".\"USERDETAILS\" VALUES ('{}', '{}', '{}', '{}');".format(fullname, email, username, password))
+
+                return render_template("newaccount.html")
+        
+@app.route("/news", methods = ["GET", "POST"])
+
+def news():
+
+        f = open("./api.txt", "r")
+
+        newsapi = NewsApiClient(api_key = f.read())
+
+        if request.method == "POST":
+
+                if(request.form["newsresource"] == "google"):
+
+                        newsresource = "google-news-in"
+                        
+                        msg = "GOOGLE NEWS"
+
+                elif(request.form["newsresource"] == "bbc"):
+
+                        newsresource = "bbc-news"
+
+                        msg = "BBC NEWS"
+
+                elif(request.form["newsresource"] == "toi"):
+
+                        newsresource = "the-times-of-india"
+
+                        msg = "Times of India"
+
+                elif(request.form["newsresource"] == "abc"):
+
+                        newsresource = "abc-news"
+
+                        msg = "ABC NEWS"
+
+        topheadlines = newsapi.get_top_headlines(sources=newsresource) 
+
+        articles = topheadlines["articles"] 
+
+        news = []
+        author = []
+        publishedAt = []
+        desc = []
+        img = []
+        content = []
+        url = []
+
+        for i in range(len(articles)):
+
+                myarticles = articles[i]
+                news.append(myarticles["title"])
+                author.append(myarticles["author"])
+                publishedAt.append(myarticles["publishedAt"])
+                desc.append(myarticles["description"])
+                img.append(myarticles["urlToImage"])
+                content.append(myarticles["content"])
+                url.append(myarticles["url"])
+                mylist = zip(news, author, publishedAt, desc,img, content, url)
+
+        return render_template("news.html", context = mylist)
